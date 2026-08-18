@@ -1,0 +1,156 @@
+# SPDX-License-Identifier: MIT
+# ATLASKnO — Staging & Integration Verification
+#
+# Triggers on push to the staging branch.
+# Three sequential jobs: integration tests, build dry-run, docs build.
+
+name: "Staging QA"
+
+on:
+  push:
+    branches: [staging]
+
+concurrency:
+  group: staging-qa
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ── Full Integration Suite ───────────────────────────────────────────
+  integration-tests:
+    name: "Integration Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+          pip install -e ".[dev,validation]" || pip install -e ".[dev]" || true
+
+      - name: Run integration tests
+        run: |
+          if [ -d "tests/integration" ] && find tests/integration -name "test_*.py" -o -name "*_test.py" | head -1 | grep -q .; then
+            pytest tests/integration/ \
+              -m "integration" \
+              --cov=atlaskno \
+              --cov-report=term-missing \
+              --junitxml=integration-results.xml \
+              -v
+          else
+            echo "ℹ️ No integration tests found — skipping."
+            echo "   Create tests in tests/integration/ with @pytest.mark.integration"
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-results
+          path: integration-results.xml
+          if-no-files-found: ignore
+          retention-days: 30
+
+  # ── Build & Package Dry-Run ──────────────────────────────────────────
+  build-dry-run:
+    name: "Build & Package Dry-Run"
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Verify package metadata
+        run: twine check dist/*
+
+      - name: Test installation in clean venv
+        run: |
+          python -m venv /tmp/test-install-env
+          source /tmp/test-install-env/bin/activate
+
+          # Install the wheel
+          pip install dist/*.whl
+
+          # Smoke test: import the package
+          python -c "
+          try:
+              import atlaskno
+              print(f'✅ Successfully imported atlaskno')
+          except ImportError:
+              print('ℹ️  Package installs but no atlaskno module yet (expected for early-stage)')
+          "
+
+          deactivate
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-build
+          path: dist/
+          retention-days: 30
+
+  # ── Documentation Build ──────────────────────────────────────────────
+  docs-build:
+    name: "Documentation Build"
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install documentation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[docs]" || pip install mkdocs mkdocs-material mkdocstrings[python] || true
+
+      - name: Build documentation
+        run: |
+          if [ -f "mkdocs.yml" ]; then
+            mkdocs build --strict
+            echo "✅ MkDocs build succeeded"
+          elif [ -f "docs/conf.py" ]; then
+            pip install sphinx sphinx-rtd-theme
+            sphinx-build -W -b html docs/ docs/_build/
+            echo "✅ Sphinx build succeeded"
+          else
+            echo "ℹ️ No documentation config found (mkdocs.yml or docs/conf.py) — skipping."
+            echo "   Create mkdocs.yml to enable documentation builds."
+          fi
+
+      - name: Upload documentation artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-build
+          path: |
+            site/
+            docs/_build/
+          if-no-files-found: ignore
+          retention-days: 30

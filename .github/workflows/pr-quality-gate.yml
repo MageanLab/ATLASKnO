@@ -1,0 +1,152 @@
+# SPDX-License-Identifier: MIT
+# ATLASKnO — Fast Pull-Request Quality Gate
+#
+# Runs on every PR targeting develop or staging.
+# Parallel jobs: lint, security scan, unit tests (matrix), license compliance.
+
+name: "PR Quality Gate"
+
+on:
+  pull_request:
+    branches: [develop, staging]
+
+concurrency:
+  group: pr-quality-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ── Code Lint & Format ────────────────────────────────────────────────
+  lint-format:
+    name: "Lint & Format (Ruff + Mypy)"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy
+          # Install project deps for mypy type resolution
+          pip install -e ".[dev]" || true
+
+      - name: Ruff lint
+        run: ruff check . --output-format=github
+
+      - name: Ruff format check
+        run: ruff format --check --diff .
+
+      - name: Mypy type check
+        run: mypy . --ignore-missing-imports || true
+        # Non-blocking during early development — remove `|| true` to enforce
+
+  # ── Security & Secrets ────────────────────────────────────────────────
+  security-scan:
+    name: "Security Scan"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for secret scanning
+
+      - name: Gitleaks — Secret scanning
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Bandit — Python SAST
+        run: |
+          # Find Python files, run bandit; skip if none found
+          if find . -name "*.py" -not -path "./.git/*" | head -1 | grep -q .; then
+            bandit -r . -c pyproject.toml --format json --output bandit-report.json || true
+            bandit -r . -c pyproject.toml --format screen
+          else
+            echo "ℹ️ No Python files found — skipping Bandit scan."
+          fi
+
+      - name: Upload Bandit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: bandit-report.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  # ── Unit Tests (Matrix) ───────────────────────────────────────────────
+  unit-tests:
+    name: "Unit Tests (Python ${{ matrix.python-version }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+          pip install -e ".[dev,validation]" || pip install -e ".[dev]" || true
+
+      - name: Run unit tests
+        run: |
+          if [ -d "tests" ] && find tests -name "test_*.py" -o -name "*_test.py" | head -1 | grep -q .; then
+            pytest tests/ \
+              -m "not integration and not slow" \
+              --cov=atlaskno \
+              --cov-report=term-missing \
+              --cov-report=xml:coverage.xml \
+              --junitxml=test-results.xml \
+              -v
+          else
+            echo "ℹ️ No test files found — skipping. Tests will run once tests/ is populated."
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-py${{ matrix.python-version }}
+          path: |
+            test-results.xml
+            coverage.xml
+          if-no-files-found: ignore
+          retention-days: 30
+
+  # ── License Compliance ────────────────────────────────────────────────
+  license-compliance:
+    name: "License Compliance"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run license header checks
+        run: |
+          chmod +x scripts/check_license_headers.sh
+          ./scripts/check_license_headers.sh
