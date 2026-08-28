@@ -30,7 +30,7 @@ FORMAT_MAP: dict[str, str] = {
 }
 
 # Directories to scan (relative to repo root)
-SCAN_DIRS: list[str] = ["data", "schedules"]
+SCAN_DIRS: list[str] = ["dist", "data", "schedules", "ATLASKnO-Core"]
 
 
 def _discover_files(root: Path) -> list[Path]:
@@ -60,7 +60,7 @@ def validate(root: Path) -> int:
     files = _discover_files(root)
 
     if not files:
-        print("ℹ️  No RDF data files found — nothing to validate.")
+        print("[INFO] No RDF data files found -- nothing to validate.")
         return 0
 
     errors: list[tuple[Path, str]] = []
@@ -101,17 +101,17 @@ def validate(root: Path) -> int:
             errors.append((filepath, str(exc)))
             validated += 1
 
-    print(f"✅ Scanned {validated} file(s)")
+    print(f"[OK] Scanned {validated} file(s)")
 
     if errors:
-        print(f"\n❌ {len(errors)} file(s) failed RDF syntax validation:\n")
+        print(f"\n[ERROR] {len(errors)} file(s) failed RDF syntax validation:\n")
         for filepath, err in errors:
             rel = filepath.relative_to(root)
             print(f"  FAIL  {rel}")
             print(f"        {err}\n")
         return 1
 
-    print("✅ All RDF files passed syntax validation.")
+    print("[OK] All RDF files passed syntax validation.")
     return 0
 
 

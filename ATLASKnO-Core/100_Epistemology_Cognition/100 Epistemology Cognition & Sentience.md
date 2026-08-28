@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Epistemology Cognition & Sentience"
 skos:altLabel:
   en: ["Cognitive Science", "Philosophy of Mind", "Substrate-Agnostic Cognition"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Root class for the study of knowledge, belief, cognitive architectures, and consciousness across biological, synthetic, and hybrid substrates."
 skos:historyNote:

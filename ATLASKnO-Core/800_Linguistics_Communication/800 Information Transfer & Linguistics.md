@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Information Transfer & Linguistics"
 skos:altLabel:
   en: ["Communication Science", "Linguistics", "Signaling Protocols"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Root class for language, signaling, communication theory, semiotics, media, and information transfer protocols across human and artificial agents."
 skos:historyNote:

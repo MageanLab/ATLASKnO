@@ -5,8 +5,7 @@ skos:prefLabel:
   en: "Foundations & Formal Systems"
 skos:altLabel:
   en: ["Formal Sciences", "Axiomatic Systems", "Abstract Logic"]
-skos:broader:
-[]
+skos:broader: []
 skos:narrower:
   - "[[010 Pure Mathematics]]"
   - "[[012 Discrete Mathematics]]"

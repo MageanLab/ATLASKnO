@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Terra Incognita (Reserved)"
 skos:altLabel:
   en: ["Epistemic Horizon", "Reserved Expansion Zone"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Permanently reserved expansion zone marking the epistemic horizon of ATLASKnO. Deliberately held vacant for unmapped, emergent, or future knowledge domains."
 skos:historyNote:

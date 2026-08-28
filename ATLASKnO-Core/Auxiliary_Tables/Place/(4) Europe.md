@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Europe"
 skos:altLabel:
   en: ["European Geographic Sphere"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Auxiliary spatial coordinate denoting European geographic boundary."
 skos:historyNote:

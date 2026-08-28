@@ -5,8 +5,7 @@ skos:prefLabel:
   en: "Collective Organization & Societal Dynamics"
 skos:altLabel:
   en: ["Social Systems", "Multi-Agent Organization", "De-Anthropocentrized Sociology"]
-skos:broader:
-[]
+skos:broader: []
 skos:narrower:
   - "[[310 Population & Entity Dynamics]]"
   - "[[320 Power Dynamics & Governance]]"

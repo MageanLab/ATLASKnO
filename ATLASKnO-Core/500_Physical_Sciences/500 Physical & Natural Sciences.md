@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Physical & Natural Sciences"
 skos:altLabel:
   en: ["Hard Sciences", "Empirical Physics & Chemistry"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Empirical sciences of the physical universe: physics, chemistry, astronomy, earth sciences, and materials science."
 skos:historyNote:

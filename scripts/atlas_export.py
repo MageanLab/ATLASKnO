@@ -237,7 +237,7 @@ def export_vault(dry_run: bool = False) -> None:
     DIST_DIR.mkdir(parents=True, exist_ok=True)
     g = build_skos_graph(VAULT_ROOT)
 
-    print(f"📊 Graph built with {len(g)} RDF triples.")
+    print(f"[INFO] Graph built with {len(g)} RDF triples.")
 
     ttl_file = DIST_DIR / "atlaskno_core.ttl"
     jsonld_file = DIST_DIR / "atlaskno_core.jsonld"

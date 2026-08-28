@@ -17,7 +17,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-SCAN_DIRS: list[str] = ["data", "schedules"]
+SCAN_DIRS: list[str] = ["dist", "data", "schedules", "ATLASKnO-Core"]
 SHAPES_DIR: str = "shapes"
 FORMAT_MAP: dict[str, str] = {
     ".ttl": "turtle",
@@ -53,7 +53,7 @@ def validate(root: Path) -> int:
     try:
         from pyshacl import validate as shacl_validate
     except ImportError:
-        print("⚠️  pyshacl is not installed — skipping SHACL validation.")
+        print("[WARN] pyshacl is not installed -- skipping SHACL validation.")
         print("   Install with: pip install pyshacl")
         return 0  # Don't fail CI if pyshacl is optional
 
@@ -61,7 +61,7 @@ def validate(root: Path) -> int:
 
     shapes_path = root / SHAPES_DIR
     if not shapes_path.is_dir():
-        print(f"ℹ️  No '{SHAPES_DIR}/' directory found — skipping SHACL validation.")
+        print(f"[INFO] No '{SHAPES_DIR}/' directory found -- skipping SHACL validation.")
         return 0
 
     # Discover shape files
@@ -71,7 +71,7 @@ def validate(root: Path) -> int:
     shape_files.sort()
 
     if not shape_files:
-        print(f"ℹ️  No SHACL shape files found in '{SHAPES_DIR}/' — skipping.")
+        print(f"[INFO] No SHACL shape files found in '{SHAPES_DIR}/' -- skipping.")
         return 0
 
     # Load shapes graph
@@ -81,23 +81,23 @@ def validate(root: Path) -> int:
         fmt = FORMAT_MAP.get(ext, "turtle")
         try:
             shapes_graph.parse(str(sf), format=fmt)
-            print(f"  📐 Loaded shape: {sf.relative_to(root)}")
+            print(f"  [LOAD] Loaded shape: {sf.relative_to(root)}")
         except Exception as exc:  # noqa: BLE001
-            print(f"  ❌ Failed to parse shape {sf.relative_to(root)}: {exc}")
+            print(f"  [FAIL] Failed to parse shape {sf.relative_to(root)}: {exc}")
             return 1
 
     if len(shapes_graph) == 0:
-        print("ℹ️  Shapes graph is empty — skipping validation.")
+        print("[INFO] Shapes graph is empty -- skipping validation.")
         return 0
 
     # Load data graph
     data_graph = _load_graph(root, SCAN_DIRS)
     if len(data_graph) == 0:
-        print("ℹ️  No RDF data triples loaded — nothing to validate against shapes.")
+        print("[INFO] No RDF data triples loaded -- nothing to validate against shapes.")
         return 0
 
-    print(f"\n📊 Data: {len(data_graph)} triples | Shapes: {len(shapes_graph)} triples")
-    print("🔍 Running SHACL validation...\n")
+    print(f"\n[INFO] Data: {len(data_graph)} triples | Shapes: {len(shapes_graph)} triples")
+    print("[CHECK] Running SHACL validation...\n")
 
     # Run SHACL validation
     conforms, results_graph, results_text = shacl_validate(
@@ -110,10 +110,10 @@ def validate(root: Path) -> int:
     )
 
     if conforms:
-        print("✅ SHACL validation passed — data conforms to all shape constraints.")
+        print("[OK] SHACL validation passed -- data conforms to all shape constraints.")
         return 0
 
-    print("❌ SHACL validation FAILED — constraint violations found:\n")
+    print("[FAIL] SHACL validation FAILED -- constraint violations found:\n")
     print(results_text)
     return 1
 

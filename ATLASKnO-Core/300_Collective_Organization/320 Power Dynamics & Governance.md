@@ -7,8 +7,7 @@ skos:altLabel:
   en: ["Political Science", "Institutional Design", "Control Systems"]
 skos:broader:
   - "[[300 Collective Organization & Societal Dynamics]]"
-skos:narrower:
-[]
+skos:narrower: []
 skos:scopeNote:
   en: "Distribution, exercise, legitimation, and contestation of power and regulatory control within multi-agent collective systems."
 skos:historyNote:

@@ -7,8 +7,7 @@ skos:altLabel:
   en: ["Demographics", "Agent Demography", "Population Ecology"]
 skos:broader:
   - "[[300 Collective Organization & Societal Dynamics]]"
-skos:narrower:
-[]
+skos:narrower: []
 skos:scopeNote:
   en: "Quantitative study of agent populations: growth, dispersal, age-structure, carrying capacity, and demographic transitions across species and agent collectives."
 skos:historyNote:

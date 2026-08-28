@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Complex Adaptive Systems & Technology"
 skos:altLabel:
   en: ["Applied Sciences", "Engineering & Biotech", "Computation & Life"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Root class for complex adaptive systems: biology, ecology, biotechnology, engineering, computational hardware, and applied technology."
 skos:historyNote:

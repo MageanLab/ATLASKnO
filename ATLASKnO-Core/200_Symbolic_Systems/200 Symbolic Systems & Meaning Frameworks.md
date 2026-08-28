@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Symbolic Systems & Meaning Frameworks"
 skos:altLabel:
   en: ["Semiotics", "Belief Systems", "Ontological Frameworks"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Root class for systems of symbols, signs, representations, semiotics, metaphysical frameworks, and belief systems."
 skos:historyNote:

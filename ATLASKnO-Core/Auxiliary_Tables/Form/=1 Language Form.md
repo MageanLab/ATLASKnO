@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Language Form"
 skos:altLabel:
   en: ["Linguistic Medium", "Textual Representation"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Auxiliary table specifying language medium, script, or linguistic format."
 skos:historyNote:

@@ -28,7 +28,7 @@ from pathlib import Path
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF, SKOS
 
-SCAN_DIRS: list[str] = ["data", "schedules"]
+SCAN_DIRS: list[str] = ["dist", "data", "schedules", "ATLASKnO-Core"]
 FORMAT_MAP: dict[str, str] = {
     ".ttl": "turtle",
     ".rdf": "xml",
@@ -151,47 +151,47 @@ def validate(root: Path) -> int:
     g = _load_all_rdf(root)
 
     if len(g) == 0:
-        print("ℹ️  No RDF triples loaded — nothing to validate.")
+        print("[INFO] No RDF triples loaded -- nothing to validate.")
         return 0
 
-    print(f"📊 Loaded {len(g)} triples from data files.\n")
+    print(f"[INFO] Loaded {len(g)} triples from data files.\n")
 
     all_errors: list[str] = []
 
     # 1. Cycle detection
-    print("🔍 Checking for circular references...")
+    print("[CHECK] Checking for circular references...")
     cycle_errors = check_cycles(g)
     if cycle_errors:
         all_errors.extend(cycle_errors)
-        print(f"   ❌ Found {len(cycle_errors)} cycle(s)")
+        print(f"   [FAIL] Found {len(cycle_errors)} cycle(s)")
     else:
-        print("   ✅ No cycles detected")
+        print("   [OK] No cycles detected")
 
     # 2. Broken URI detection
-    print("🔍 Checking for broken URI references...")
+    print("[CHECK] Checking for broken URI references...")
     uri_errors = check_broken_uris(g)
     if uri_errors:
         all_errors.extend(uri_errors)
-        print(f"   ❌ Found {len(uri_errors)} broken URI(s)")
+        print(f"   [FAIL] Found {len(uri_errors)} broken URI(s)")
     else:
-        print("   ✅ All URI references are valid")
+        print("   [OK] All URI references are valid")
 
     # 3. Faceted operator validation
-    print("🔍 Checking faceted operator syntax...")
+    print("[CHECK] Checking faceted operator syntax...")
     op_errors = check_faceted_operators(g)
     if op_errors:
         all_errors.extend(op_errors)
-        print(f"   ❌ Found {len(op_errors)} invalid notation(s)")
+        print(f"   [FAIL] Found {len(op_errors)} invalid notation(s)")
     else:
-        print("   ✅ All notations use valid operators")
+        print("   [OK] All notations use valid operators")
 
     if all_errors:
-        print(f"\n❌ Total: {len(all_errors)} integrity issue(s):\n")
+        print(f"\n[ERROR] Total: {len(all_errors)} integrity issue(s):\n")
         for err in all_errors:
-            print(f"  • {err}")
+            print(f"  * {err}")
         return 1
 
-    print("\n✅ All taxonomy integrity checks passed.")
+    print("\n[OK] All taxonomy integrity checks passed.")
     return 0
 
 

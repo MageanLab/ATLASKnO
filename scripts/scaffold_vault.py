@@ -366,21 +366,19 @@ NODES: list[VaultNode] = [
 def build_yaml_frontmatter(node: VaultNode) -> str:
     """Generate W3C SKOS-compliant YAML frontmatter."""
     alt_list = ", ".join(f'"{a}"' for a in node.alt_labels_en)
-    broader_list = "\n".join(f'  - "{b}"' for b in node.broader) if node.broader else "[]"
-    narrower_list = "\n".join(f'  - "{n}"' for n in node.narrower) if node.narrower else "[]"
+    broader_str = " []" if not node.broader else "\n" + "\n".join(f'  - "{b}"' for b in node.broader)
+    narrower_str = " []" if not node.narrower else "\n" + "\n".join(f'  - "{n}"' for n in node.narrower)
 
     lines = [
         "---",
         f'id: "{node.node_uri}"',
-        'skos:notation: "' + node.notation + '"',
+        f'skos:notation: "{node.notation}"',
         "skos:prefLabel:",
         f'  en: "{node.pref_label_en}"',
         "skos:altLabel:",
         f"  en: [{alt_list}]",
-        "skos:broader:",
-        f"{broader_list}",
-        "skos:narrower:",
-        f"{narrower_list}",
+        f"skos:broader:{broader_str}",
+        f"skos:narrower:{narrower_str}",
         "skos:scopeNote:",
         f'  en: "{node.scope_note_en}"',
         "skos:historyNote:",

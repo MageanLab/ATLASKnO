@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Spatiotemporal Topology & Event History"
 skos:altLabel:
   en: ["Historiography", "Spatial Geography", "Chronology"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Root class for geographic, historical, and topological knowledge structured along space-time coordinates."
 skos:historyNote:

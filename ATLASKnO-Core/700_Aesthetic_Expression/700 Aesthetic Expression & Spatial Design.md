@@ -5,10 +5,8 @@ skos:prefLabel:
   en: "Aesthetic Expression & Spatial Design"
 skos:altLabel:
   en: ["The Arts", "Architecture", "Sensory Design"]
-skos:broader:
-[]
-skos:narrower:
-[]
+skos:broader: []
+skos:narrower: []
 skos:scopeNote:
   en: "Root class for visual arts, architecture, performing arts, aesthetic theory, and spatial design."
 skos:historyNote:
