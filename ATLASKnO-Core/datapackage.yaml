@@ -1,0 +1,24 @@
+profile: "tabular-data-package"
+name: "atlaskno-core"
+title: "ATLASKnO Core Knowledge Map"
+version: "1.0.0"
+description: "Core analytico-synthetic knowledge ontology, decimal coordinate index, and faceted classification schedules."
+homepage: "https://github.com/MageanLab/ATLASKnO"
+created: "2026-08-28"
+licenses:
+  - name: "CC-BY-SA-3.0"
+    path: "https://creativecommons.org/licenses/by-sa/3.0/"
+    title: "Creative Commons Attribution Share Alike 3.0 Unported"
+contributors:
+  - title: "Magean Research"
+    role: "author"
+sources:
+  - title: "Universal Decimal Classification Summary (UDC-S)"
+    path: "https://udcsummary.info/"
+keywords:
+  - "knowledge-organization"
+  - "skos"
+  - "faceted-classification"
+  - "analytico-synthetic"
+  - "linked-open-data"
+  - "ontology"
